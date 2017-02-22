@@ -3,6 +3,7 @@ package net.darkhax.lttweaker;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -29,9 +32,11 @@ public class LTTMod {
     @Instance(Constants.MODID)
     public static LTTMod instance;
 
-    private Field pools;
+    private static Field pools;
 
-    private Field lootEntries;
+    private static Field lootEntries;
+
+    public static Map<String, LootTable> tables = new HashMap<>();
 
     @EventHandler
     public void preInit (FMLPreInitializationEvent event) {
@@ -54,18 +59,24 @@ public class LTTMod {
         MinecraftForge.EVENT_BUS.register(this);
         MineTweakerAPI.registerClass(LootTableTweaker.class);
 
-        this.pools = ReflectionHelper.findField(LootTable.class, "pools");
-        this.lootEntries = ReflectionHelper.findField(LootPool.class, "lootEntries");
+        pools = ReflectionHelper.findField(LootTable.class, "pools", "field_186466_c", "c");
+        lootEntries = ReflectionHelper.findField(LootPool.class, "lootEntries", "field_186453_a", "a");
     }
 
-    @SubscribeEvent
+    @EventHandler
+    public void serverStarting (FMLServerStartingEvent event) {
+
+        event.registerServerCommand(new CommandTableDump());
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTablesLoad (LootTableLoadEvent event) {
 
         final String tableName = event.getName().toString();
 
         if (LootTableTweaker.tablesToClear.contains(tableName)) {
 
-            this.getPools(event.getTable()).clear();
+            LTTMod.getPools(event.getTable()).clear();
         }
 
         if (LootTableTweaker.poolsToClear.containsKey(tableName)) {
@@ -92,13 +103,15 @@ public class LTTMod {
                 }
             }
         }
+
+        tables.put(tableName, event.getTable());
     }
 
-    private List<LootPool> getPools (LootTable table) {
+    public static List<LootPool> getPools (LootTable table) {
 
         try {
 
-            return (List<LootPool>) this.pools.get(table);
+            return (List<LootPool>) pools.get(table);
 
         }
 
@@ -110,10 +123,10 @@ public class LTTMod {
         return new ArrayList<>();
     }
 
-    public List<LootEntry> getLootEntries (LootPool pool) {
+    public static List<LootEntry> getLootEntries (LootPool pool) {
 
         try {
-            return (List<LootEntry>) this.lootEntries.get(pool);
+            return (List<LootEntry>) lootEntries.get(pool);
         }
         catch (IllegalArgumentException | IllegalAccessException e) {
             // TODO Auto-generated catch block
