@@ -41,7 +41,7 @@ public class LTTMod {
     @EventHandler
     public void preInit (FMLPreInitializationEvent event) {
 
-        final File scriptDir = new File("Scripts", "LootTableTweaker");
+        final File scriptDir = new File("scripts", "loottabletweaker");
 
         if (!scriptDir.exists()) {
             scriptDir.mkdir();
