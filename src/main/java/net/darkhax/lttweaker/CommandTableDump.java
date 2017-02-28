@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.SystemUtils;
 
 import net.darkhax.lttweaker.libs.Constants;
+import net.darkhax.lttweaker.libs.LootEntryItemContext;
+import net.darkhax.lttweaker.libs.TableBuilder;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -43,28 +45,38 @@ public class CommandTableDump extends CommandBase {
             if (thePools.isEmpty()) {
                 Constants.LOG.info("No entries for this table!");
             }
+
             else {
 
-                Constants.LOG.info(SystemUtils.LINE_SEPARATOR);
-                Constants.LOG.info("|Pool|Name|Item|Weight|");
-                Constants.LOG.info("|----|----|----|------|");
-            }
+                final TableBuilder<LootEntryItemContext> output = new TableBuilder<>();
+                output.addColumn("Pool Name", LootEntryItemContext::getPoolName);
+                output.addColumn("Entry Name", LootEntryItemContext::getEntryName);
+                output.addColumn("Item ID", LootEntryItemContext::getItemName);
+                output.addColumn("Weight", LootEntryItemContext::getWeight);
 
-            for (final LootPool pool : thePools) {
+                for (final LootPool pool : thePools) {
 
-                for (final LootEntry entry : LTTMod.getLootEntries(pool)) {
+                    for (final LootEntry entry : LTTMod.getLootEntries(pool)) {
 
-                    if (entry instanceof LootEntryItem) {
+                        if (entry instanceof LootEntryItem) {
 
-                        final LootEntryItem item = (LootEntryItem) entry;
-                        Constants.LOG.info(String.format("|%s|%s|%s|%d|", pool.getName(), entry.getEntryName(), item.item.getRegistryName().toString(), item.weight));
+                            output.addEntry(new LootEntryItemContext(pool, (LootEntryItem) entry));
+                        }
                     }
                 }
+
+                Constants.LOG.info(SystemUtils.LINE_SEPARATOR + output.createString());
             }
 
             Constants.LOG.info(SystemUtils.LINE_SEPARATOR);
         }
 
         sender.sendMessage(new TextComponentTranslation("command.loottabletweaks.enddump"));
+    }
+
+    private Object getPool () {
+
+        // TODO Auto-generated method stub
+        return null;
     }
 }
