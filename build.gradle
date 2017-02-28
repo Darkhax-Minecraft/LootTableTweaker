@@ -55,8 +55,7 @@ repositories {
 
 dependencies {
 
-    deobfCompile "MineTweaker3:MineTweaker3-MC1102-Main:1.10.2-3.0.20.70"
-    deobfCompile "MineTweaker3:MineTweaker3-API:3.0.20.70"
+    deobfCompile "MineTweaker3:MineTweaker3-MC1102-Main:1.10.2-3.0.22.71"
 }
 
 //Handles basic resources such as mcmod.info
