@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 public class TableBuilder<T> {
 
-    //TOOD make this stuff configurable
+    // TOOD make this stuff configurable
     private static final String NEW_LINE = System.lineSeparator();
 
     private static final String DIVIDER_COLUMN = "|";
@@ -35,8 +35,8 @@ public class TableBuilder<T> {
      * which is used to generate row data.
      *
      * @param name The name for the column.
-     * @param function The function to apply to the object. Used to generate row data for
-     *        the column.
+     * @param function The function to apply to the object. Used to generate row data for the
+     *        column.
      */
     public void addColumn (String name, Function<? super T, ?> function) {
 
@@ -54,16 +54,16 @@ public class TableBuilder<T> {
     private int getMaxWidth (int columnIndex, Iterable<? extends T> entries) {
 
         int maxWidth = this.columnNames.get(columnIndex).length();
-        
+
         final Function<? super T, String> function = this.columnFunctions.get(columnIndex);
-        
+
         for (final T entry : entries) {
-            
-            //TODO cache
+
+            // TODO cache
             final String data = function.apply(entry);
             maxWidth = Math.max(maxWidth, data.length());
         }
-        
+
         return maxWidth;
     }
 
@@ -96,10 +96,10 @@ public class TableBuilder<T> {
         final List<Integer> columnWidths = new ArrayList<>();
 
         for (int columnIndex = 0; columnIndex < this.columnNames.size(); columnIndex++) {
-            
+
             columnWidths.add(this.getMaxWidth(columnIndex, entries));
         }
-        
+
         return columnWidths;
     }
 
@@ -127,53 +127,53 @@ public class TableBuilder<T> {
 
         final List<Integer> widths = this.getColumnWidths(entries);
         final int columnCount = this.columnNames.size();
-        
+
         final StringBuilder builder = new StringBuilder();
-        
+
         // Column Names
         for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-            
+
             builder.append(DIVIDER_COLUMN);
             final String columnHeader = "%-" + widths.get(columnIndex) + "s";
             builder.append(" " + String.format(columnHeader, this.columnNames.get(columnIndex)) + " ");
         }
-        
+
         builder.append(DIVIDER_COLUMN);
         builder.append(NEW_LINE);
-        
+
         // Column Seperator
         builder.append(DIVIDER_COLUMN);
         for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-            
+
             if (columnIndex > 0) {
-                
+
                 builder.append(LINE_ENDING);
             }
-            
+
             builder.append(this.padLeft("", DIVIDER_ROW, widths.get(columnIndex)));
         }
-        
+
         builder.append(LINE_ENDING);
         builder.append(NEW_LINE);
 
         // Column Data
         for (final T entry : entries) {
-            
+
             for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-                
+
                 builder.append(DIVIDER_COLUMN);
-                
+
                 final String format = "%-" + widths.get(columnIndex) + "s";
                 final Function<? super T, String> function = this.columnFunctions.get(columnIndex);
-                //TODO cache
+                // TODO cache
                 final String columnText = function.apply(entry);
                 builder.append(" " + String.format(format, columnText) + " ");
             }
-            
+
             builder.append(DIVIDER_COLUMN);
             builder.append(NEW_LINE);
         }
-        
+
         return builder.toString();
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
-import minetweaker.mc1102.brackets.ItemBracketHandler;
+import minetweaker.mc1112.brackets.ItemBracketHandler;
 import minetweaker.runtime.providers.ScriptProviderDirectory;
 import net.darkhax.lttweaker.libs.Constants;
 import net.minecraft.world.storage.loot.LootEntry;
