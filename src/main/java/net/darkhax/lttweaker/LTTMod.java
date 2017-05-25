@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-@Mod(modid = Constants.MODID, name = Constants.MOD_NAME, version = Constants.VERSION_NUMBER, dependencies = "required-after:MineTweaker3")
+@Mod(modid = Constants.MODID, name = Constants.MOD_NAME, version = "@VERSION@", dependencies = "required-after:MineTweaker3")
 public class LTTMod {
 
     @Instance(Constants.MODID)
