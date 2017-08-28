@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import minetweaker.MineTweakerAPI;
-import minetweaker.MineTweakerImplementationAPI;
-import minetweaker.mc1112.brackets.ItemBracketHandler;
-import minetweaker.runtime.providers.ScriptProviderDirectory;
+import net.darkhax.lttweaker.crt.LootTableTweaker;
 import net.darkhax.lttweaker.libs.Constants;
+import net.darkhax.lttweaker.removal.IRemover;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.storage.loot.LootEntry;
+import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,27 +37,12 @@ public class LTTMod {
     private static Field lootEntries;
 
     public static Map<String, LootTable> tables = new HashMap<>();
+    public static List<IRemover> removal = new ArrayList<>();
 
     @EventHandler
     public void preInit (FMLPreInitializationEvent event) {
 
-        final File scriptDir = new File("scripts", "loottabletweaker");
-
-        if (!scriptDir.exists()) {
-            scriptDir.mkdir();
-        }
-
-        if (scriptDir.exists()) {
-
-            MineTweakerAPI.registerBracketHandler(new ItemBracketHandler());
-            ItemBracketHandler.rebuildItemRegistry();
-            MineTweakerAPI.registerClass(LootTableTweaker.class);
-            MineTweakerAPI.tweaker.setScriptProvider(new ScriptProviderDirectory(scriptDir));
-            MineTweakerImplementationAPI.reload();
-        }
-
         MinecraftForge.EVENT_BUS.register(this);
-        MineTweakerAPI.registerClass(LootTableTweaker.class);
 
         pools = ReflectionHelper.findField(LootTable.class, "pools", "field_186466_c", "c");
         lootEntries = ReflectionHelper.findField(LootPool.class, "lootEntries", "field_186453_a", "a");
@@ -73,38 +58,56 @@ public class LTTMod {
     public void onTablesLoad (LootTableLoadEvent event) {
 
         final String tableName = event.getName().toString();
-
-        if (LootTableTweaker.tablesToClear.contains(tableName)) {
-
-            LTTMod.getPools(event.getTable()).clear();
-        }
-
-        if (LootTableTweaker.poolsToClear.containsKey(tableName)) {
-
-            for (final String poolName : LootTableTweaker.poolsToClear.get(tableName)) {
-
-                event.getTable().removePool(poolName);
-            }
-        }
-
-        if (LootTableTweaker.entriesToClear.containsKey(tableName)) {
-
-            final Map<String, List<String>> pools = LootTableTweaker.entriesToClear.get(tableName);
-
-            for (final String poolName : pools.keySet()) {
-
-                final LootPool pool = event.getTable().getPool(poolName);
-
-                if (pool != null) {
-                    for (final String entryName : pools.get(pool.getName())) {
-
-                        pool.removeEntry(entryName);
-                    }
-                }
-            }
-        }
-
         tables.put(tableName, event.getTable());
+        
+        for (IRemover remover : removal) {
+            
+            // Handles the removal of entire tables
+            if (remover.removeTable(tableName)) {
+                
+                event.setCanceled(true);
+                break;
+            }
+            
+            for (LootPool pool : getPools(event.getTable())) {
+                
+               final String poolName = pool.getName();
+               
+               // Handles the removal of specific pools
+               if (remover.removePool(tableName, tableName)) {
+                   
+                   event.getTable().removePool(poolName);
+                   continue;
+               }
+               
+               for (LootEntry entry : getLootEntries(pool)) {
+                   
+                   final String entryName = entry.getEntryName();
+                   
+                   // Handles the removal of specific entries
+                   if (remover.removeEntry(tableName, poolName, entryName)) {
+                       
+                       pool.removeEntry(entryName);
+                       continue;
+                   }
+                   
+                   // Handles the removal of specific item entries
+                   else if (entry instanceof LootEntryItem) {
+                       
+                       final LootEntryItem itemEntry = (LootEntryItem) entry;
+                       
+                       if (itemEntry.item != null && itemEntry.item.getRegistryName() != null) {
+                           
+                           if (remover.removeItem(tableName, poolName, itemEntry.item)) {
+                               
+                               pool.removeEntry(entryName);
+                               continue;
+                           }
+                       }
+                   }
+               }
+            }
+        }
     }
 
     public static List<LootPool> getPools (LootTable table) {
@@ -112,7 +115,6 @@ public class LTTMod {
         try {
 
             return (List<LootPool>) pools.get(table);
-
         }
 
         catch (IllegalArgumentException | IllegalAccessException e) {

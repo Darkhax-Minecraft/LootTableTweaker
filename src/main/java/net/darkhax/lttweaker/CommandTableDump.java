@@ -73,10 +73,4 @@ public class CommandTableDump extends CommandBase {
 
         sender.sendMessage(new TextComponentTranslation("command.loottabletweaks.enddump"));
     }
-
-    private Object getPool () {
-
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
