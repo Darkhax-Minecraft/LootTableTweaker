@@ -75,7 +75,7 @@ repositories {
 
 dependencies {
 
-    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${version_crt}"
+    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${version_crafttweaker}"
 }
 
 String getBuildNumber() {
