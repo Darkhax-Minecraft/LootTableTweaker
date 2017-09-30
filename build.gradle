@@ -44,20 +44,8 @@ minecraft {
     runDir = 'run'
     
     replace '@VERSION@', project.version
+    replace '@FINGERPRINT@', project.findProperty('signSHA1')
     replaceIn "${mod_class}.java"
-}
-
-repositories {
-    
-    maven {
-    
-        url "http://maven.blamejared.com"
-    }
-}
-
-dependencies {
-
-    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${version_crafttweaker}"
 }
 
 processResources {
@@ -75,9 +63,17 @@ processResources {
     
         exclude 'mcmod.info'
     }
-    
-    from 'LICENSE'
+
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
+
+jar {
+
+    manifest {
+ 	
+ 	    attributes 'FMLAT': 'bookshelf_at.cfg'
+ 	}
+ }
 
 String getBuildNumber() {
 
@@ -143,3 +139,20 @@ curseforge {
         addArtifact(deobfJar)
     }
 }
+
+task signJar(type: SignJar, dependsOn: reobfJar) {
+
+    onlyIf {
+    
+        project.hasProperty('keyStore')
+    }
+    
+    keyStore = project.findProperty('keyStore')
+    alias = project.findProperty('keyStoreAlias')
+    storePass = project.findProperty('keyStorePass')
+    keyPass = project.findProperty('keyStoreKeyPass')
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+}
+
+build.dependsOn signJar
