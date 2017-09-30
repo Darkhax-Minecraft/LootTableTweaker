@@ -1,16 +1,13 @@
 package net.darkhax.lttweaker;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.darkhax.lttweaker.crt.LootTableTweaker;
 import net.darkhax.lttweaker.libs.Constants;
 import net.darkhax.lttweaker.removal.IRemover;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootEntryItem;
@@ -60,66 +57,66 @@ public class LTTMod {
 
         final String tableName = event.getName().toString();
         tables.put(tableName, event.getTable());
-        
-        List<String> poolsToRemove = new ArrayList<>();
-        List<Tuple<LootPool, String>> entriesToRemove = new ArrayList<>();
-        
-        for (IRemover remover : removal) {
-            
+
+        final List<String> poolsToRemove = new ArrayList<>();
+        final List<Tuple<LootPool, String>> entriesToRemove = new ArrayList<>();
+
+        for (final IRemover remover : removal) {
+
             // Handles the removal of entire tables
             if (remover.removeTable(tableName)) {
-                
+
                 event.setCanceled(true);
                 break;
             }
-            
-            for (LootPool pool : getPools(event.getTable())) {
-                
-               final String poolName = pool.getName();
-               
-               // Handles the removal of specific pools
-               if (remover.removePool(tableName, tableName)) {
-                   
-                   poolsToRemove.add(poolName);
-                   continue;
-               }
-               
-               for (LootEntry entry : getLootEntries(pool)) {
-                   
-                   final String entryName = entry.getEntryName();
-                   
-                   // Handles the removal of specific entries
-                   if (remover.removeEntry(tableName, poolName, entryName)) {
-                       
-                       entriesToRemove.add(new Tuple<>(pool, entryName));
-                       continue;
-                   }
-                   
-                   // Handles the removal of specific item entries
-                   else if (entry instanceof LootEntryItem) {
-                       
-                       final LootEntryItem itemEntry = (LootEntryItem) entry;
-                       
-                       if (itemEntry.item != null && itemEntry.item.getRegistryName() != null) {
-                           
-                           if (remover.removeItem(tableName, poolName, itemEntry.item)) {
-                               
-                               entriesToRemove.add(new Tuple<>(pool, entryName));
-                               continue;
-                           }
-                       }
-                   }
-               }
+
+            for (final LootPool pool : getPools(event.getTable())) {
+
+                final String poolName = pool.getName();
+
+                // Handles the removal of specific pools
+                if (remover.removePool(tableName, tableName)) {
+
+                    poolsToRemove.add(poolName);
+                    continue;
+                }
+
+                for (final LootEntry entry : getLootEntries(pool)) {
+
+                    final String entryName = entry.getEntryName();
+
+                    // Handles the removal of specific entries
+                    if (remover.removeEntry(tableName, poolName, entryName)) {
+
+                        entriesToRemove.add(new Tuple<>(pool, entryName));
+                        continue;
+                    }
+
+                    // Handles the removal of specific item entries
+                    else if (entry instanceof LootEntryItem) {
+
+                        final LootEntryItem itemEntry = (LootEntryItem) entry;
+
+                        if (itemEntry.item != null && itemEntry.item.getRegistryName() != null) {
+
+                            if (remover.removeItem(tableName, poolName, itemEntry.item)) {
+
+                                entriesToRemove.add(new Tuple<>(pool, entryName));
+                                continue;
+                            }
+                        }
+                    }
+                }
             }
         }
-        
-        for (String pool : poolsToRemove) {
-            
+
+        for (final String pool : poolsToRemove) {
+
             event.getTable().removePool(pool);
         }
-        
-        for (Tuple<LootPool, String> entry : entriesToRemove) {
-            
+
+        for (final Tuple<LootPool, String> entry : entriesToRemove) {
+
             entry.getFirst().removeEntry(entry.getSecond());
         }
     }

@@ -18,50 +18,50 @@ import stanhebben.zenscript.annotations.ZenMethod;
 public class LootTableTweaker {
 
     @ZenMethod
-    public static void removeTable(String table) {
-        
+    public static void removeTable (String table) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new SpecificTableRemover(table)));
     }
-       
+
     @ZenMethod
-    public static void removePool(String table, String pool) {
-        
+    public static void removePool (String table, String pool) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new SpecificPoolRemover(table, pool)));
     }
-    
+
     @ZenMethod
-    public static void removeEntry(String table, String pool, String entry) {
-        
+    public static void removeEntry (String table, String pool, String entry) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new SpecificEntryRemover(table, pool, entry)));
     }
-    
+
     @ZenMethod
-    public static void removeItem(String table, String pool, String item) {
-        
+    public static void removeItem (String table, String pool, String item) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new SpecificItemRemover(table, pool, item)));
     }
-    
+
     @ZenMethod
-    public static void removeModEntry(String modid) {
-        
+    public static void removeModEntry (String modid) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new ModEntryRemover(modid)));
     }
-    
+
     @ZenMethod
-    public static void removeModItem(String modid) {
-        
+    public static void removeModItem (String modid) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new ModItemRemover(modid)));
     }
-    
+
     @ZenMethod
-    public static void removeModTable(String modid) {
-        
+    public static void removeModTable (String modid) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new ModTableRemover(modid)));
     }
-    
+
     @ZenMethod
-    public static void removeGlobalItem(String itemId) {
-        
+    public static void removeGlobalItem (String itemId) {
+
         CraftTweakerAPI.apply(new ActionRemoval(new GlobalItemRemover(itemId)));
     }
 }

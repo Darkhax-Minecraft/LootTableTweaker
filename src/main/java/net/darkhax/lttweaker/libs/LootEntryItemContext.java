@@ -25,7 +25,8 @@ public class LootEntryItemContext {
         return this.entry;
     }
 
-    // Constants.LOG.info(String.format("|%s|%s|%s|%d|", pool.getName(), entry.getEntryName(),
+    // Constants.LOG.info(String.format("|%s|%s|%s|%d|", pool.getName(),
+    // entry.getEntryName(),
     // item.item.getRegistryName().toString(), item.weight));
 
     public String getPoolName () {
