@@ -18,13 +18,14 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-@Mod(modid = Constants.MODID, name = Constants.MOD_NAME, version = "@VERSION@", dependencies = "required-after:crafttweaker")
+@Mod(modid = Constants.MODID, name = Constants.MOD_NAME, version = "@VERSION@", dependencies = "required-after:crafttweaker", certificateFingerprint = "@FINGERPRINT@")
 public class LTTMod {
 
     @Instance(Constants.MODID)
@@ -147,5 +148,11 @@ public class LTTMod {
         }
 
         return null;
+    }
+    
+    @EventHandler
+    public void onFingerprintViolation (FMLFingerprintViolationEvent event) {
+
+        Constants.LOG.error("Invalid fingerprint detected! The file " + event.getSource().getName() + " may have been tampered with. This version will NOT be supported by the author!");
     }
 }

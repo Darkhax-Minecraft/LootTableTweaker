@@ -9,7 +9,5 @@ public class Constants {
 
     public static final String MOD_NAME = "Loot Table Tweaker";
 
-    public static final String VERSION_NUMBER = "1.0.0.1";
-
     public static final Logger LOG = LogManager.getLogger(MOD_NAME);
 }
