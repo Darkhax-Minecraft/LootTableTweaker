@@ -63,17 +63,20 @@ processResources {
     
         exclude 'mcmod.info'
     }
-
-    rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
-jar {
+repositories {
+    
+    maven {
+    
+        url "http://maven.blamejared.com"
+    }
+}
 
-    manifest {
- 	
- 	    attributes 'FMLAT': 'bookshelf_at.cfg'
- 	}
- }
+dependencies {
+
+    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${version_crt}"
+}
 
 String getBuildNumber() {
 
