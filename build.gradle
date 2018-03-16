@@ -63,7 +63,18 @@ processResources {
     
         exclude 'mcmod.info'
     }
+    
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
+
+jar {
+
+    manifest {
+ 	
+ 	    attributes 'FMLAT': 'lttweaks_at.cfg'
+ 	}
+ }
+
 
 repositories {
     
