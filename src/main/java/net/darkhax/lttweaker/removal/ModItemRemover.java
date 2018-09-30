@@ -14,7 +14,7 @@ public class ModItemRemover implements IRemover {
     @Override
     public boolean removeItem (String table, String pool, Item item) {
 
-        return this.modid.equalsIgnoreCase(item.getRegistryName().getResourceDomain());
+        return this.modid.equalsIgnoreCase(item.getRegistryName().getNamespace());
     }
 
     @Override
